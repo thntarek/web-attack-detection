@@ -1,0 +1,31 @@
+sudo docker run -d --name my-nginx-waf \
+  -p 80:8080 \
+  -e SECURITY_ENGINE=On \
+  -e BACKEND=http://172.17.0.1:8000 \
+  owasp/modsecurity-crs:nginx
+
+
+pip install fastapi uvicorn
+
+
+main.py
+from fastapi import FastAPI, Request
+
+app = FastAPI()
+
+@app.get("/submit")
+async def analyze(data: str, request: Request):
+    # This captures the 'data' query parameter (?data=...) smoothly
+    print(f"Received clean data from proxy: {data}")
+
+    # You can also capture any custom headers passed down by the WAF
+    modsec_id = request.headers.get("X-ModSec-ID")
+
+    return {
+        "status": "Success",
+        "message": "FastAPI processed this request cleanly!",
+        "received_data": data
+    }
+
+
+uvicorn main:app --host 0.0.0.0 --port 8000

@@ -1,0 +1,14 @@
+torch
+torchvision
+torchaudio
+
+transformers
+accelerate
+tokenizers
+
+pandas
+numpy
+
+scikit-learn
+
+tqdm
